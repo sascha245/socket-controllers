@@ -33,6 +33,8 @@ function createExecutor(io: any, options: SocketControllersOptions): void {
     // second import all controllers and middlewares and error handlers
     if (options && options.controllers && options.controllers.length)
         importClassesFromDirectories(options.controllers);
+    if (options && options.middlewares && options.middlewares.length)
+        importClassesFromDirectories(options.middlewares);
 
     if (options.useClassTransformer !== undefined) {
         executor.useClassTransformer = options.useClassTransformer;
