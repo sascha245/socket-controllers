@@ -7,6 +7,7 @@ import {
     OnMessage,
     EmitOnSuccess,
     EmitOnFail,
+    EmitOnFailFor,
     SkipEmitOnEmptyResult
 } from "../../src/decorators";
 import {Message} from "./Message";
@@ -38,10 +39,24 @@ export class MessageController {
     @OnMessage("try_to_save")
     @EmitOnSuccess("message_save_success")
     @EmitOnFail("message_save_failed")
+    @EmitOnFailFor("message_invalid", () => InvalidException)
     @SkipEmitOnEmptyResult()
     trySave(@ConnectedSocket() socket: any, @MessageBody() message: Message) {
         console.log("received message:", message);
-        throw new Error("No, cannot save =(");
-    }
 
+        switch (message.text) {
+            case "invalid":
+                throw new InvalidException("Message Text Invalid");
+            case "invalid_empty":
+                throw new InvalidException();
+            case "empty_no_response":
+                throw null;
+            default:
+                throw new Error("No, cannot save =(");
+        }
+    }
+}
+
+export class InvalidException {
+    constructor(public message?: string) { }
 }
