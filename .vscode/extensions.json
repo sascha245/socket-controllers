@@ -1,0 +1,13 @@
+{
+    // List of extensions which should be recommended for users of this workspace.
+    "recommendations": [
+        "mrmlnc.vscode-duplicate",
+        "eg2.vscode-npm-script",
+        "eg2.tslint",
+        "editorconfig.editorconfig",
+        "christian-kohler.npm-intellisense",
+        "christian-kohler.path-intellisense",
+        "esbenp.prettier-vscode",
+        "mike-co.import-sorter"
+    ]
+}
