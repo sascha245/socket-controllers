@@ -1,7 +1,7 @@
-import {MetadataArgsStorage} from "./metadata-builder/MetadataArgsStorage";
-import {importClassesFromDirectories} from "./util/DirectoryExportedClassesLoader";
-import {SocketControllerExecutor} from "./SocketControllerExecutor";
-import {SocketControllersOptions} from "./SocketControllersOptions";
+import { MetadataArgsStorage } from "./metadata-builder/MetadataArgsStorage";
+import { SocketControllerExecutor } from "./SocketControllerExecutor";
+import { SocketControllersOptions } from "./SocketControllersOptions";
+import { importClassesFromDirectories } from "./util/DirectoryExportedClassesLoader";
 
 // -------------------------------------------------------------------------
 // Main Functions
@@ -31,17 +31,16 @@ function createExecutor(io: any, options: SocketControllersOptions): void {
     const executor = new SocketControllerExecutor(io);
 
     // second import all controllers and middlewares and error handlers
-    if (options && options.controllers && options.controllers.length)
-        importClassesFromDirectories(options.controllers);
-    if (options && options.middlewares && options.middlewares.length)
-        importClassesFromDirectories(options.middlewares);
+    if (options && options.controllers && options.controllers.length) importClassesFromDirectories(options.controllers);
+    if (options && options.middlewares && options.middlewares.length) importClassesFromDirectories(options.middlewares);
 
     if (options.useClassTransformer !== undefined) {
         executor.useClassTransformer = options.useClassTransformer;
     } else {
         executor.useClassTransformer = true;
     }
-
+    // set default value for options.validate to true
+    executor.validate = options.validate === undefined ? true : false;
     executor.classToPlainTransformOptions = options.classToPlainTransformOptions;
     executor.plainToClassTransformOptions = options.plainToClassTransformOptions;
 
@@ -67,6 +66,7 @@ export function defaultMetadataArgsStorage(): MetadataArgsStorage {
 // Commonly Used exports
 // -------------------------------------------------------------------------
 
+export * from "./error";
 export * from "./container";
 export * from "./decorators";
 export * from "./SocketControllersOptions";

@@ -1,14 +1,16 @@
-import {defaultMetadataArgsStorage} from "./index";
-import {SocketControllerMetadataArgs} from "./metadata/args/SocketControllerMetadataArgs";
-import {ActionMetadataArgs} from "./metadata/args/ActionMetadataArgs";
-import {ActionTypes} from "./metadata/types/ActionTypes";
-import {ParamMetadataArgs} from "./metadata/args/ParamMetadataArgs";
-import {ParamTypes} from "./metadata/types/ParamTypes";
-import {ClassTransformOptions} from "class-transformer";
-import {MiddlewareMetadataArgs} from "./metadata/args/MiddlewareMetadataArgs";
-import {ResultMetadataArgs} from "./metadata/args/ResultMetadataArgs";
-import {ResultTypes} from "./metadata/types/ResultTypes";
-import {ObjectType} from './util/ObjectType';
+import { ClassTransformOptions } from "class-transformer";
+
+import { defaultMetadataArgsStorage } from "./index";
+import { ActionMetadataArgs } from "./metadata/args/ActionMetadataArgs";
+import { MiddlewareMetadataArgs } from "./metadata/args/MiddlewareMetadataArgs";
+import { ParamMetadataArgs } from "./metadata/args/ParamMetadataArgs";
+import { ResultMetadataArgs } from "./metadata/args/ResultMetadataArgs";
+import { SocketControllerMetadataArgs } from "./metadata/args/SocketControllerMetadataArgs";
+import { ActionTypes } from "./metadata/types/ActionTypes";
+import { ParamTypes } from "./metadata/types/ParamTypes";
+import { ResultTypes } from "./metadata/types/ResultTypes";
+import { MessageBodyOptions } from "./options/MessageBodyOptions";
+import { ObjectType } from "./util/ObjectType";
 
 /**
  * Registers a class to be a socket controller that can listen to websocket events and respond to them.
@@ -16,7 +18,7 @@ import {ObjectType} from './util/ObjectType';
  * @param namespace Namespace in which this controller's events will be registered.
  */
 export function SocketController(namespace?: string) {
-    return function (object: Function) {
+    return function(object: Function) {
         const metadata: SocketControllerMetadataArgs = {
             namespace: namespace,
             target: object
@@ -29,7 +31,7 @@ export function SocketController(namespace?: string) {
  * Registers controller's action to be executed when socket receives message with given name.
  */
 export function OnMessage(name?: string): Function {
-    return function (object: Object, methodName: string) {
+    return function(object: Object, methodName: string) {
         const metadata: ActionMetadataArgs = {
             name: name,
             target: object.constructor,
@@ -44,7 +46,7 @@ export function OnMessage(name?: string): Function {
  * Registers controller's action to be executed when client connects to the socket.
  */
 export function OnConnect(): Function {
-    return function (object: Object, methodName: string) {
+    return function(object: Object, methodName: string) {
         const metadata: ActionMetadataArgs = {
             target: object.constructor,
             method: methodName,
@@ -58,7 +60,7 @@ export function OnConnect(): Function {
  * Registers controller's action to be executed when client disconnects from the socket.
  */
 export function OnDisconnect(): Function {
-    return function (object: Object, methodName: string) {
+    return function(object: Object, methodName: string) {
         const metadata: ActionMetadataArgs = {
             target: object.constructor,
             method: methodName,
@@ -72,7 +74,7 @@ export function OnDisconnect(): Function {
  * Injects connected client's socket object to the controller action.
  */
 export function ConnectedSocket() {
-    return function (object: Object, methodName: string, index: number) {
+    return function(object: Object, methodName: string, index: number) {
         let format = (Reflect as any).getMetadata("design:paramtypes", object, methodName)[index];
         const metadata: ParamMetadataArgs = {
             target: object.constructor,
@@ -89,7 +91,7 @@ export function ConnectedSocket() {
  * Injects socket.io object that initialized a connection.
  */
 export function SocketIO() {
-    return function (object: Object, methodName: string, index: number) {
+    return function(object: Object, methodName: string, index: number) {
         let format = (Reflect as any).getMetadata("design:paramtypes", object, methodName)[index];
         const metadata: ParamMetadataArgs = {
             target: object.constructor,
@@ -105,8 +107,8 @@ export function SocketIO() {
 /**
  * Injects received message body.
  */
-export function MessageBody(options?: { classTransformOptions?: ClassTransformOptions }) {
-    return function (object: Object, methodName: string, index: number) {
+export function MessageBody(options?: MessageBodyOptions) {
+    return function(object: Object, methodName: string, index: number) {
         let format = (Reflect as any).getMetadata("design:paramtypes", object, methodName)[index];
         const metadata: ParamMetadataArgs = {
             target: object.constructor,
@@ -114,6 +116,7 @@ export function MessageBody(options?: { classTransformOptions?: ClassTransformOp
             index: index,
             type: ParamTypes.SOCKET_BODY,
             reflectedType: format,
+            value: options,
             classTransformOptions: options && options.classTransformOptions ? options.classTransformOptions : undefined
         };
         defaultMetadataArgsStorage().params.push(metadata);
@@ -124,7 +127,7 @@ export function MessageBody(options?: { classTransformOptions?: ClassTransformOp
  * Injects query parameter from the received socket request.
  */
 export function SocketQueryParam(name?: string) {
-    return function (object: Object, methodName: string, index: number) {
+    return function(object: Object, methodName: string, index: number) {
         let format = (Reflect as any).getMetadata("design:paramtypes", object, methodName)[index];
         const metadata: ParamMetadataArgs = {
             target: object.constructor,
@@ -142,7 +145,7 @@ export function SocketQueryParam(name?: string) {
  * Injects socket id from the received request.
  */
 export function SocketId() {
-    return function (object: Object, methodName: string, index: number) {
+    return function(object: Object, methodName: string, index: number) {
         let format = (Reflect as any).getMetadata("design:paramtypes", object, methodName)[index];
         const metadata: ParamMetadataArgs = {
             target: object.constructor,
@@ -159,7 +162,7 @@ export function SocketId() {
  * Injects request object received by socket.
  */
 export function SocketRequest() {
-    return function (object: Object, methodName: string, index: number) {
+    return function(object: Object, methodName: string, index: number) {
         let format = (Reflect as any).getMetadata("design:paramtypes", object, methodName)[index];
         const metadata: ParamMetadataArgs = {
             target: object.constructor,
@@ -176,7 +179,7 @@ export function SocketRequest() {
  * Injects rooms of the connected socket client.
  */
 export function SocketRooms() {
-    return function (object: Object, methodName: string, index: number) {
+    return function(object: Object, methodName: string, index: number) {
         let format = (Reflect as any).getMetadata("design:paramtypes", object, methodName)[index];
         const metadata: ParamMetadataArgs = {
             target: object.constructor,
@@ -193,7 +196,7 @@ export function SocketRooms() {
  * Registers a new middleware to be registered in the socket.io.
  */
 export function Middleware(options?: { priority?: number }): Function {
-    return function (object: Function) {
+    return function(object: Function) {
         const metadata: MiddlewareMetadataArgs = {
             target: object,
             priority: options && options.priority ? options.priority : undefined
@@ -207,8 +210,11 @@ export function Middleware(options?: { priority?: number }): Function {
  * It will emit message only if controller succeed without errors.
  * If result is a Promise then it will wait until promise is resolved and emit a message.
  */
-export function EmitOnSuccess(messageName: string, options?: { classTransformOptions?: ClassTransformOptions }): Function {
-    return function (object: Object, methodName: string) {
+export function EmitOnSuccess(
+    messageName: string,
+    options?: { classTransformOptions?: ClassTransformOptions }
+): Function {
+    return function(object: Object, methodName: string) {
         const metadata: ResultMetadataArgs = {
             target: object.constructor,
             method: methodName,
@@ -226,7 +232,7 @@ export function EmitOnSuccess(messageName: string, options?: { classTransformOpt
  * If result is a Promise then it will wait until promise throw an error and emit a message.
  */
 export function EmitOnFail(messageName: string, options?: { classTransformOptions?: ClassTransformOptions }): Function {
-    return function (object: Object, methodName: string) {
+    return function(object: Object, methodName: string) {
         const metadata: ResultMetadataArgs = {
             target: object.constructor,
             method: methodName,
@@ -238,9 +244,13 @@ export function EmitOnFail(messageName: string, options?: { classTransformOption
     };
 }
 
-export function EmitOnFailFor<T extends Error>(messageName: string, errorType: (type?: any) => ObjectType<T>, options?: { classTransformOptions?: ClassTransformOptions }): Function {
-    return function (object: Object, methodName: string) {
-        const metadata: ResultMetadataArgs = {    
+export function EmitOnFailFor<T extends Error>(
+    messageName: string,
+    errorType: (type?: any) => ObjectType<T>,
+    options?: { classTransformOptions?: ClassTransformOptions }
+): Function {
+    return function(object: Object, methodName: string) {
+        const metadata: ResultMetadataArgs = {
             target: object.constructor,
             method: methodName,
             type: ResultTypes.EMIT_ON_FAIL_FOR,
@@ -248,9 +258,9 @@ export function EmitOnFailFor<T extends Error>(messageName: string, errorType: (
             errorType: errorType,
             classTransformOptions: options && options.classTransformOptions ? options.classTransformOptions : undefined
         };
-        
+
         defaultMetadataArgsStorage().results.push(metadata);
-    }
+    };
 }
 
 /**
@@ -259,7 +269,7 @@ export function EmitOnFailFor<T extends Error>(messageName: string, errorType: (
  * or @EmitOnFail decorators.
  */
 export function SkipEmitOnEmptyResult(): Function {
-    return function (object: Object, methodName: string) {
+    return function(object: Object, methodName: string) {
         const metadata: ResultMetadataArgs = {
             target: object.constructor,
             method: methodName,

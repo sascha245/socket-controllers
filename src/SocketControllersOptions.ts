@@ -1,10 +1,9 @@
-import {ClassTransformOptions} from "class-transformer";
+import { ClassTransformOptions } from "class-transformer";
 
 /**
  * Socket controllers initialization options.
  */
 export interface SocketControllersOptions {
-
     /**
      * List of directories from where to "require" all your controllers.
      */
@@ -32,5 +31,9 @@ export interface SocketControllersOptions {
      * This operation is being executed when parsing user parameters.
      */
     plainToClassTransformOptions?: ClassTransformOptions;
-    
+
+    /**
+     * Is Validation activated by default
+     */
+    validate?: boolean;
 }

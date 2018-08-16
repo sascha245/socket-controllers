@@ -26,9 +26,10 @@
     "socket-controllers"
   ],
   "dependencies": {
-    "class-transformer": "^0.1.6",
-    "reflect-metadata": "^0.1.10",
-    "socket.io": "^2.0.1"
+    "class-transformer": "^0.1.9",
+    "class-validator": "^0.9.1",
+    "reflect-metadata": "^0.1.12",
+    "socket.io": "^2.1.1"
   },
   "devDependencies": {
     "@types/chai": "^3.5.2",
@@ -63,6 +64,7 @@
     "typescript": "^2.3.2"
   },
   "scripts": {
-    "test": "gulp tests"
+    "test": "gulp tests",
+    "build": "gulp compile"
   }
 }

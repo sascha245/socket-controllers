@@ -7,7 +7,7 @@
 [![devDependency Status](https://david-dm.org/pleerock/socket-controllers/dev-status.svg)](https://david-dm.org/pleerock/socket-controllers#info=devDependencies)
 [![Join the chat at https://gitter.im/pleerock/socket-controllers](https://badges.gitter.im/pleerock/socket-controllers.svg)](https://gitter.im/pleerock/socket-controllers?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-Use class-based controllers to handle websocket events. 
+Use class-based controllers to handle websocket events.
 Helps to organize your code using websockets in classes.
 
 ## Installation
@@ -27,7 +27,7 @@ Helps to organize your code using websockets in classes.
     ```
 
 3. ES6 features are used, if you are using old version of node.js you may need to install
- [es6-shim](https://github.com/paulmillr/es6-shim):
+   [es6-shim](https://github.com/paulmillr/es6-shim):
 
     `npm install es6-shim --save`
 
@@ -41,27 +41,32 @@ Helps to organize your code using websockets in classes.
 
     `typings install dt~socket.io --save --global`
 
-
 ## Example of usage
 
 1. Create a file `MessageController.ts`
 
     ```typescript
-    import {OnConnect, SocketController, ConnectedSocket, OnDisconnect, MessageBody, OnMessage} from "socket-controllers";
+    import {
+        OnConnect,
+        SocketController,
+        ConnectedSocket,
+        OnDisconnect,
+        MessageBody,
+        OnMessage
+    } from "socket-controllers";
 
     @SocketController()
     export class MessageController {
-    
         @OnConnect()
         connection(@ConnectedSocket() socket: any) {
             console.log("client connected");
         }
-    
+
         @OnDisconnect()
         disconnect(@ConnectedSocket() socket: any) {
             console.log("client disconnected");
         }
-    
+
         @OnMessage("save")
         save(@ConnectedSocket() socket: any, @MessageBody() message: any) {
             console.log("received message:", message);
@@ -69,7 +74,6 @@ Helps to organize your code using websockets in classes.
             message.id = 1;
             socket.emit("message_saved", message);
         }
-    
     }
     ```
 
@@ -78,9 +82,9 @@ Helps to organize your code using websockets in classes.
     ```typescript
     import "es6-shim"; // this shim is optional if you are using old version of node
     import "reflect-metadata"; // this shim is required
-    import {createSocketServer} from "socket-controllers";
-    import "./MessageController";  // we need to "load" our controller before call createSocketServer. this is required
-     
+    import { createSocketServer } from "socket-controllers";
+    import "./MessageController"; // we need to "load" our controller before call createSocketServer. this is required
+
     createSocketServer(3001);
     ```
 
@@ -94,11 +98,10 @@ Controller action marked with `@OnConnect()` decorator is called once new client
 Controller action marked with `@OnDisconnect()` decorator is called once client disconnected.
 
 ```typescript
-import {SocketController, OnConnect, OnDisconnect} from "socket-controllers";
+import { SocketController, OnConnect, OnDisconnect } from "socket-controllers";
 
 @SocketController()
 export class MessageController {
-
     @OnConnect()
     save() {
         console.log("client connected");
@@ -108,7 +111,6 @@ export class MessageController {
     save() {
         console.log("client disconnected");
     }
-
 }
 ```
 
@@ -117,16 +119,14 @@ export class MessageController {
 To get connected socket instance you need to use `@ConnectedSocket()` decorator.
 
 ```typescript
-import {SocketController, OnMessage, ConnectedSocket} from "socket-controllers";
+import { SocketController, OnMessage, ConnectedSocket } from "socket-controllers";
 
 @SocketController()
 export class MessageController {
-
     @OnMessage("save")
     save(@ConnectedSocket() socket: any) {
         socket.emit("save_success");
     }
-
 }
 ```
 
@@ -135,16 +135,14 @@ export class MessageController {
 To get received message body use `@MessageBody()` decorator:
 
 ```typescript
-import {SocketController, OnMessage, MessageBody} from "socket-controllers";
+import { SocketController, OnMessage, MessageBody } from "socket-controllers";
 
 @SocketController()
 export class MessageController {
-
     @OnMessage("save")
     save(@MessageBody() message: any) {
         console.log("received message: ", message);
     }
-
 }
 ```
 
@@ -152,21 +150,24 @@ If you specify a class type to parameter that is decorated with `@MessageBody()`
 socket-controllers will use [class-transformer][1] to create instance of the given class type with the data received in the message.
 To disable this behaviour you need to specify a `{ useConstructorUtils: false }` in SocketControllerOptions when creating a server.
 
+By default, the specified class type will be validated by [class-validator][2].
+You can also disable class validation by specifying `{ validate: false }` in MessageBodyOptions, or in SocketControllerOptions if you wish to disable validation globally.
+
+If the validation fails, a ValidationException is thrown.
+
 #### `@SocketQueryParam()` decorator
 
 To get received query parameter use `@SocketQueryParam()` decorator.
 
 ```typescript
-import {SocketController, OnMessage, MessageBody} from "socket-controllers";
+import { SocketController, OnMessage, MessageBody } from "socket-controllers";
 
 @SocketController()
 export class MessageController {
-
     @OnMessage("save")
     save(@SocketQueryParam("token") token: string) {
         console.log("authorization token from query parameter: ", token);
     }
-
 }
 ```
 
@@ -175,31 +176,26 @@ export class MessageController {
 To get connected client id use `@SocketId()` decorator.
 
 ```typescript
-import {SocketController, OnMessage, MessageBody} from "socket-controllers";
+import { SocketController, OnMessage, MessageBody } from "socket-controllers";
 
 @SocketController()
 export class MessageController {
-
     @OnMessage("save")
-    save(@SocketId() id: string) {
-    }
-
+    save(@SocketId() id: string) {}
 }
 ```
 
 #### Get access to using socket.io instance using `@SocketIO()` decorator
 
 ```typescript
-import {SocketController, OnMessage, MessageBody} from "socket-controllers";
+import { SocketController, OnMessage, MessageBody } from "socket-controllers";
 
 @SocketController()
 export class MessageController {
-
     @OnMessage("save")
     save(@SocketIO() io: any) {
         // now you can broadcast messages to specific rooms or namespaces using io instance
     }
-
 }
 ```
 
@@ -208,28 +204,25 @@ export class MessageController {
 You can use `@EmitOnSuccess` decorator:
 
 ```typescript
-import {SocketController, OnMessage, EmitOnSuccess} from "socket-controllers";
+import { SocketController, OnMessage, EmitOnSuccess } from "socket-controllers";
 
 @SocketController()
 export class MessageController {
-
     @OnMessage("save")
     @EmitOnSuccess("save_successfully")
     save() {
         // after this controller executed "save_successfully" message will be emitted back to the client
     }
-
 }
 ```
 
 If you return something, it will be returned in the emitted message data:
 
 ```typescript
-import {SocketController, OnMessage, EmitOnSuccess} from "socket-controllers";
+import { SocketController, OnMessage, EmitOnSuccess } from "socket-controllers";
 
 @SocketController()
 export class MessageController {
-
     @OnMessage("save")
     @EmitOnSuccess("save_successfully")
     save() {
@@ -239,18 +232,16 @@ export class MessageController {
             text: "new message"
         };
     }
-
 }
 ```
 
 You can also control what message will be emitted if there is error/exception during execution:
 
 ```typescript
-import {SocketController, OnMessage, EmitOnSuccess, EmitOnFail} from "socket-controllers";
+import { SocketController, OnMessage, EmitOnSuccess, EmitOnFail } from "socket-controllers";
 
 @SocketController()
 export class MessageController {
-
     @OnMessage("save")
     @EmitOnSuccess("save_successfully")
     @EmitOnFail("save_error")
@@ -263,7 +254,6 @@ export class MessageController {
             text: "new message"
         };
     }
-
 }
 ```
 
@@ -272,11 +262,10 @@ In this case `save_error` message will be sent to the client with `One is equal 
 Additionally, you can also control what message will be emitted for specific error conditions:
 
 ```typescript
-import {SocketController, OnMessage, EmitOnSuccess, EmitOnFail, EmitOnFailFor} from "socket-controllers";
+import { SocketController, OnMessage, EmitOnSuccess, EmitOnFail, EmitOnFailFor } from "socket-controllers";
 
 @SocketController()
 export class MessageController {
-
     @OnMessage("save")
     @EmitOnSuccess("save_successfully")
     @EmitOnFailFor("id_not_found", () => NotFoundException)
@@ -293,7 +282,6 @@ export class MessageController {
             text: "new message"
         };
     }
-
 }
 
 export class NotFoundException {
@@ -305,30 +293,28 @@ In this case `id_not_found` message will be sent to the client with `The provide
 Otherwise the client will receieve `save_error` with `Could not save id!` error message.
 
 Note: If you want to use `@EmitOnFailFor()` your thrown exceptions cannot inherit from the `Error` class, unless you use this [workaround](https://github.com/Microsoft/TypeScript/wiki/Breaking-Changes#extending-built-ins-like-error-array-and-map-may-no-longer-work). Not inheriting from the `Error` class will also let you
-differentiate between JavaScript runtime errors and your Application Exceptions. 
+differentiate between JavaScript runtime errors and your Application Exceptions.
 
 Sometimes you may want to not emit success/error message if returned result is null or undefined.
 In such cases you can use `@SkipEmitOnEmptyResult()` decorator.
 
 ```typescript
-import {SocketController, OnMessage, EmitOnSuccess, EmitOnFail, SkipEmitOnEmptyResult} from "socket-controllers";
+import { SocketController, OnMessage, EmitOnSuccess, EmitOnFail, SkipEmitOnEmptyResult } from "socket-controllers";
 
 @SocketController()
 export class MessageController {
-
     @OnMessage("get")
     @EmitOnSuccess("get_success")
     @SkipEmitOnEmptyResult()
     get(): Promise<Message[]> {
         return this.messageRepository.findAll();
     }
-
 }
 ```
 
 In this case if findAll will return undefined, `get_success` message will not be emitted.
 If findAll will return array of messages, they will be emitted back to the client in the `get_success` message.
-This example also demonstrates Promises support. 
+This example also demonstrates Promises support.
 If promise returned by controller action, message will be emitted only after promise will be resolved.
 
 #### Using exist server instead of creating a new one
@@ -339,7 +325,7 @@ Here is example of creating socket.io server and configuring it with express:
 
 ```typescript
 import "reflect-metadata"; // this shim is required
-import {useSocketServer} from "socket-controllers";
+import { useSocketServer } from "socket-controllers";
 
 const app = require("express")();
 const server = require("http").Server(app);
@@ -347,7 +333,7 @@ const io = require("socket.io")(server);
 
 server.listen(3001);
 
-app.get("/", function (req: any, res: any) {
+app.get("/", function(req: any, res: any) {
     res.send("hello express");
 });
 
@@ -365,7 +351,7 @@ You can load all controllers in once from specific directories, by specifying ar
 
 ```typescript
 import "reflect-metadata"; // this shim is required
-import {createSocketServer, loadControllers} from "socket-controllers";
+import { createSocketServer, loadControllers } from "socket-controllers";
 
 createSocketServer(3000, {
     controllers: [__dirname + "/controllers/*.js"]
@@ -390,16 +376,14 @@ Middlewares allows you to define a logic that will be executed each time client 
 To create your middlewares use `@Middleware` decorator:
 
 ```typescript
-import {Middleware, MiddlewareInterface} from "socket-controllers";
+import { Middleware, MiddlewareInterface } from "socket-controllers";
 
 @Middleware()
 export class CompressionMiddleware implements MiddlewareInterface {
-
     use(socket: any, next: ((err?: any) => any)) {
         console.log("do something, for example get authorization token and check authorization");
         next();
     }
-
 }
 ```
 
@@ -409,7 +393,7 @@ Controllers and middlewares should be loaded globally, before app bootstrap:
 
 ```typescript
 import "reflect-metadata";
-import {createSocketServer} from "socket-controllers";
+import { createSocketServer } from "socket-controllers";
 import "./MessageController";
 import "./MyMiddleware"; // here we load it
 let io = createSocketServer(3000);
@@ -419,7 +403,7 @@ Also you can load them from directories. Also you can use glob patterns:
 
 ```typescript
 import "reflect-metadata";
-import {createSocketServer, loadControllers} from "socket-controllers";
+import { createSocketServer, loadControllers } from "socket-controllers";
 let io = createSocketServer(3000, {
     controllers: [__dirname + "/controllers/**/*.js"],
     middlewareDirs: [__dirname + "/middlewares/**/*.js"]
@@ -428,14 +412,14 @@ let io = createSocketServer(3000, {
 
 ## Using DI container
 
-`socket-controllers` supports a DI container out of the box. You can inject your services into your controllers and 
+`socket-controllers` supports a DI container out of the box. You can inject your services into your controllers and
 middlewares. Container must be setup during application bootstrap.
 Here is example how to integrate socket-controllers with [typedi](https://github.com/pleerock/typedi):
 
 ```typescript
 import "reflect-metadata";
-import {createSocketServer, useContainer} from "socket-controllers";
-import {Container} from "typedi";
+import { createSocketServer, useContainer } from "socket-controllers";
+import { Container } from "typedi";
 
 // its important to set container before any operation you do with socket-controllers,
 // including importing controllers
@@ -453,35 +437,32 @@ That's it, now you can inject your services into your controllers:
 ```typescript
 @SocketController()
 export class MessageController {
-
-    constructor(private messageRepository: MessageRepository) {
-    }
+    constructor(private messageRepository: MessageRepository) {}
 
     // ... controller actions
-
 }
 ```
 
 ## Decorators Reference
 
-| Signature                                           | Description                                                                                                                                                                                                                                                                 |
-|-----------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `@SocketController(namespace?: string)`             | Registers a class to be a socket controller that can listen to websocket events and respond to them.                                                                                                                                                                        |
-| `@OnMessage(messageName: string)`                   | Registers controller's action to be executed when socket receives message with given name.                                                                                                                                                                                  |
-| `@OnConnect()`                                      | Registers controller's action to be executed when client connects to the socket.                                                                                                                                                                                            |
-| `@OnDisconnect()`                                   | Registers controller's action to be executed when client disconnects from the socket.                                                                                                                                                                                       |
-| `@ConnectedSocket()`                                | Injects connected client's socket object to the controller action.                                                                                                                                                                                                          |
-| `@SocketIO()`                                       | Injects socket.io object that initialized a connection.                                                                                                                                                                                                                     |
-| `@MessageBody()`                                    | Injects received message body.                                                                                                                                                                                                                                              |
-| `@SocketQueryParam(paramName: string)`              | Injects query parameter from the received socket request.                                                                                                                                                                                                                   |
-| `@SocketId()`                                       | Injects socket id from the received request.                                                                                                                                                                                                                                |
-| `@SocketRequest()`                                  | Injects request object received by socket.                                                                                                                                                                                                                                  |
-| `@SocketRooms()`                                    | Injects rooms of the connected socket client.                                                                                                                                                                                                                               |
-| `@Middleware()`                                     | Registers a new middleware to be registered in the socket.io.                                                                                                                                                                                                               |
-| `@EmitOnSuccess(messageName: string)`               | If this decorator is set then after controller action will emit message with the given name after action execution. It will emit message only if controller succeed without errors. If result is a Promise then it will wait until promise is resolved and emit a message.  |
-| `@EmitOnFail(messageName: string)`                  | If this decorator is set then after controller action will emit message with the given name after action execution. It will emit message only if controller throw an exception. If result is a Promise then it will wait until promise throw an error and emit a message.   |
-| `@EmitOnFailFor(messageName: string, errorType: () => ObjectType)` |  If this decorator is set then after controller action will emit message with the given name after action execution. It will emit message only if controller throw an exception of the specified type. If result is a Promise then it will wait until promise throw an error and emit a message.   |
-| `@SkipEmitOnEmptyResult()`                          | Used in conjunction with @EmitOnSuccess and @EmitOnFail decorators. If result returned by controller action is null or undefined then messages will not be emitted by @EmitOnSuccess or @EmitOnFail decorators.                                                             |                                                                                                                                                                     |
+| Signature                                                          | Description                                                                                                                                                                                                                                                                                     |
+| ------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `@SocketController(namespace?: string)`                            | Registers a class to be a socket controller that can listen to websocket events and respond to them.                                                                                                                                                                                            |
+| `@OnMessage(messageName: string)`                                  | Registers controller's action to be executed when socket receives message with given name.                                                                                                                                                                                                      |
+| `@OnConnect()`                                                     | Registers controller's action to be executed when client connects to the socket.                                                                                                                                                                                                                |
+| `@OnDisconnect()`                                                  | Registers controller's action to be executed when client disconnects from the socket.                                                                                                                                                                                                           |
+| `@ConnectedSocket()`                                               | Injects connected client's socket object to the controller action.                                                                                                                                                                                                                              |
+| `@SocketIO()`                                                      | Injects socket.io object that initialized a connection.                                                                                                                                                                                                                                         |
+| `@MessageBody()`                                                   | Injects received message body.                                                                                                                                                                                                                                                                  |
+| `@SocketQueryParam(paramName: string)`                             | Injects query parameter from the received socket request.                                                                                                                                                                                                                                       |
+| `@SocketId()`                                                      | Injects socket id from the received request.                                                                                                                                                                                                                                                    |
+| `@SocketRequest()`                                                 | Injects request object received by socket.                                                                                                                                                                                                                                                      |
+| `@SocketRooms()`                                                   | Injects rooms of the connected socket client.                                                                                                                                                                                                                                                   |
+| `@Middleware()`                                                    | Registers a new middleware to be registered in the socket.io.                                                                                                                                                                                                                                   |
+| `@EmitOnSuccess(messageName: string)`                              | If this decorator is set then after controller action will emit message with the given name after action execution. It will emit message only if controller succeed without errors. If result is a Promise then it will wait until promise is resolved and emit a message.                      |
+| `@EmitOnFail(messageName: string)`                                 | If this decorator is set then after controller action will emit message with the given name after action execution. It will emit message only if controller throw an exception. If result is a Promise then it will wait until promise throw an error and emit a message.                       |
+| `@EmitOnFailFor(messageName: string, errorType: () => ObjectType)` | If this decorator is set then after controller action will emit message with the given name after action execution. It will emit message only if controller throw an exception of the specified type. If result is a Promise then it will wait until promise throw an error and emit a message. |
+| `@SkipEmitOnEmptyResult()`                                         | Used in conjunction with @EmitOnSuccess and @EmitOnFail decorators. If result returned by controller action is null or undefined then messages will not be emitted by @EmitOnSuccess or @EmitOnFail decorators.                                                                                 |  |
 
 ## Samples
 
@@ -490,7 +471,8 @@ of usage.
 
 ## Related projects
 
-* If you are interested to create controller-based express or koa server use [routing-controllers](https://github.com/pleerock/routing-controllers) module.
-* If you need to use dependency injection in use [typedi](https://github.com/pleerock/typedi) module.
+-   If you are interested to create controller-based express or koa server use [routing-controllers](https://github.com/pleerock/routing-controllers) module.
+-   If you need to use dependency injection in use [typedi](https://github.com/pleerock/typedi) module.
 
 [1]: https://github.com/pleerock/class-transformer
+[2]: https://github.com/pleerock/class-validator

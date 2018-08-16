@@ -1,0 +1,36 @@
+<html>
+<script src="../../node_modules/socket.io-client/dist/socket.io.js"></script>
+<script>
+    var socket = io("http://localhost:3001");
+
+    socket.on("save/error", function (err) {
+        console.log("Failed to save message: Unknown error", err);
+    });
+    socket.on("save/validation_error", function (err) {
+        console.log("Failed to save message: Validation failed", err);
+    });
+    socket.on("save/success", function (result) {
+        console.log("Saved message:", result);
+    });
+
+    function onClick() {
+        const text = "Hello this is message";
+        socket.emit('save', { text });
+    }
+    function onClickFail() {
+        const text = 42;
+        socket.emit('save', { text });
+    }
+
+</script>
+
+<body>
+
+    Watch console for events.
+    <br/>
+    <button onclick="onClick()">Emit save with valid message</button>
+    <button onclick="onClickFail()">Emit save with invalid message</button>
+
+</body>
+
+</html>
